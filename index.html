@@ -26,7 +26,8 @@
   <h1>محاسبه قیمت محصول طلا</h1>
   <div class="card">
     <div class="grid">
-      <div><label>وزن (گرم)</label><input id="weight" type="number" step="0.001" value="12.380"></div>
+      <!-- Initially set وزن (گرم) to 0 so users start with zero weight but can edit it -->
+      <div><label>وزن (گرم)</label><input id="weight" type="number" step="0.001" value="0"></div>
       <div><label>عیار</label><input id="karat" type="number" step="1" value="18"></div>
       <div><label>اجرت (%)</label><input id="ajrat" type="number" step="0.1" value="20"></div>
       <div><label>سود فروشنده (%)</label><input id="profit" type="number" step="0.1" value="7"></div>
@@ -93,7 +94,8 @@
     const basePrice = weight * goldPerGram;
     const ajrat     = basePrice * ajratP;
     const profit    = (basePrice + ajrat) * profitP;
-    const tax       = profit * taxP;
+    // مالیات فقط روی اجرت و سود اعمال می‌شود نه روی بهای خام
+    const tax       = (ajrat + profit) * taxP;
     const finalPrice= basePrice + ajrat + profit + tax;
     $("result").innerText = nf.format(Math.round(finalPrice)) + " تومان";
   }
