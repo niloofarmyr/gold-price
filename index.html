@@ -49,15 +49,18 @@
 // کاربر اتصال به اینترنت نداشته باشد، امکان وارد کردن دستی قیمت فراهم می‌شود.
 
 (function(){
-  const WORKER_URL = "https://YOUR_WORKER_ADDRESS.workers.dev/"; // آدرس پراکسی خود را جایگزین کنید
+  // آدرس فایل JSON که توسط GitHub Actions تولید می‌شود
+  const DATA_URL = "./data/gold18.json";
   const nf = new Intl.NumberFormat("fa-IR");
   const $ = id => document.getElementById(id);
 
-  // تلاش برای دریافت قیمت از سرور
+  // تلاش برای دریافت قیمت از فایل JSON داخلی
   async function fetchGold18(){
     try{
       $("gold18").placeholder = "درحال دریافت...";
-      const res = await fetch(WORKER_URL, { cache: "no-store" });
+      // از فایل داده‌ها در مخزن خوانده می‌شود. مرورگر ممکن است کش را نگه دارد؛
+      // با گذاشتن timestamp در querystring از کش جلوگیری می‌کنیم.
+      const res = await fetch(`${DATA_URL}?_=${Date.now()}`, { cache: "no-store" });
       if(!res.ok) throw new Error("Network response was not ok");
       const data = await res.json();
       if(!data || typeof data.gold18_toman !== 'number') throw new Error("Invalid data");
@@ -66,7 +69,7 @@
       $("ts").innerText = "به‌روز شده: " + new Date(data.updated_at).toLocaleString("fa-IR");
       $("error").innerText = "";
     }catch(e){
-      // اگر خطا بود، اجازهٔ ورود دستی بده و پیام خطا نمایش بده
+      // اگر خطا بود، اجازه‌ی ورود دستی بده و پیام خطا نمایش بده
       $("gold18").disabled = false;
       $("gold18").value = "";
       $("gold18").placeholder = "قیمت را دستی وارد کنید";
@@ -101,7 +104,7 @@
     if(!text || text === "---") calc();
     navigator.clipboard.writeText($("result").innerText).then(()=>{
       $("copyBtn").innerText = "کپی شد!";
-      setTimeout(()=>$ ("copyBtn").innerText = "کپی قیمت",1200);
+      setTimeout(()=>$("copyBtn").innerText = "کپی قیمت",1200);
     });
   });
 
